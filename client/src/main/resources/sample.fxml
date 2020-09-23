@@ -9,6 +9,7 @@
                        onAction="#tryToAuth"/>
         <Button text="auth" onAction="#tryToAuth" minWidth="50"/>
         <Button text="reg" onAction="#registration" minWidth="50"/>
+        <Button text="change" onAction="#changeNick" minWidth="50"/>
     </HBox>
 
     <HBox VBox.vgrow="ALWAYS">

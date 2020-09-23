@@ -57,6 +57,8 @@ public class Controller implements Initializable {
     private Stage stage;
     private Stage regStage;
     private RegController regController;
+    private Stage changeRegStage;
+    private ChangeRegController changeRegController;
 
     public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
@@ -79,6 +81,7 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setAuthenticated(false);
         createRegWindow();
+        createChangeRegWindow();
         Platform.runLater(() -> {
             stage = (Stage) textField.getScene().getWindow();
             stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -123,12 +126,24 @@ public class Controller implements Initializable {
 
                             if (str.startsWith("/regok")) {
                                 regController.addMsgToTextArea("Регистрация прошла успешно");
+                                textArea.appendText(str + "\n");
                             }
                             if (str.startsWith("/regno")) {
                                 regController.addMsgToTextArea("Регистрация не получилась \n возможно логин или ник заняты");
+                                textArea.appendText(str + "\n");
                             }
 
-                            textArea.appendText(str + "\n");
+
+                            if (str.startsWith("/changeNickOk")) {
+                                changeRegController.addMsgToTextArea("NickName успешно изменён");
+                                textArea.appendText(str + "\n");
+                            }
+                            if (str.startsWith("/changeNickNo")) {
+                                changeRegController.addMsgToTextArea("Смена NickName не выполнена \n введены не корректные данные");
+                                textArea.appendText(str + "\n");
+                            }
+
+
                         }
 
                         //цикл работы
@@ -244,8 +259,45 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
         System.out.println(msg);
     }
+
+    private void createChangeRegWindow() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/change_reg.fxml"));
+            Parent root = fxmlLoader.load();
+            changeRegStage = new Stage();
+            changeRegStage.setTitle("ChangeNick window");
+            changeRegStage.setScene(new Scene(root, 400, 250));
+
+            changeRegController = fxmlLoader.getController();
+            changeRegController.setController(this);
+
+            changeRegStage.initModality(Modality.APPLICATION_MODAL);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void changeNick(ActionEvent actionEvent) {
+        changeRegStage.show();
+    }
+
+    public void tryToChangeAuth(String login, String password, String nickname, String new_nickname) {
+        String msg = String.format("/change_reg %s %s %s %s", login, password, nickname, new_nickname);
+
+        if (socket == null || socket.isClosed()) {
+            connect();
+        }
+
+        try {
+            out.writeUTF(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(msg);
+    }
+
+
 }
