@@ -59,13 +59,26 @@ public class ClientHandler {
                             if (token.length < 4) {
                                 continue;
                             }
-
                             boolean b = server.getAuthService()
                                     .registration(token[1], token[2], token[3]);
                             if (b) {
                                 sendMsg("/regok");
                             } else {
                                 sendMsg("/regno");
+                            }
+                        }
+
+                        if (str.startsWith("/change_reg ")) {
+                            String[] token = str.split("\\s");
+                            if (token.length < 5) {
+                                continue;
+                            }
+                            boolean b = server.getAuthService()
+                                    .changeNickname(token[1], token[2], token[3], token[4]);
+                            if (b) {
+                                sendMsg("/changeNickOk");
+                            } else {
+                                sendMsg("/changeNickNo");
                             }
                         }
 
